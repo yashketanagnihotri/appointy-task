@@ -1,23 +1,70 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import HomePage from "./components/HomePage";
+import DatePage from "./components/DatePage";
+import TimePage from "./components/TimePage";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
+const callDurations=(url)=>{
+
+}
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/date",
+    element: <DatePage />,
+  },
+  {
+    path: "/slots",
+    element: <TimePage />,
+  },
+]);
 function App() {
+  const [duration, setDuration] = useState([]);
+  const [resources, setResources] = useState([]);
+  const [businessHours, setBusinessHours] = useState([]);
+  const [blockHours, setBlockHours] = useState([]);
+  const [appointments, setAppointments] = useState([]);
+
+  const [selectedResource, setSelectedResource] = useState(null);
+
+  useEffect(() => {
+    var myHeaders = new Headers();
+    myHeaders.append(
+      "Authorization",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOiIyMDIzLTA4LTEwVDAwOjAwOjAwWiIsInVzZXJfaWQiOjMwMDF9.8pZMhoqZdBLqOKT0V7perD4vkoA347idSHVLaCcdefs"
+    );
+    var requestOptions = {
+      method: "GET",
+      mode: "cors",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+    // durations
+    fetch(
+      "http://api.internship.appointy.com:8000/v1/durations",
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => setDuration(result))
+      .catch((error) => console.log("error", error));
+    // resources
+    fetch(
+      "http://api.internship.appointy.com:8000/v1/resources",
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then((result) => setResources(result))
+      .catch((error) => console.log("error", error));
+  }, []);
+  console.log(resources);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <RouterProvider router={router} />
     </div>
   );
 }
